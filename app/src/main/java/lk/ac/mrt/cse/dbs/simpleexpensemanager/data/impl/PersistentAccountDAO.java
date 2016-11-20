@@ -23,34 +23,34 @@ public class PersistentAccountDAO implements AccountDAO {
     }
     @Override
     public List<String> getAccountNumbersList() {
-        Cursor resultSet = database.rawQuery("SELECT Account_no FROM Account",null);
-        List<String> accounts = new ArrayList<String>();
+        Cursor result = database.rawQuery("SELECT Account_no FROM Account",null);
+        List<String> accountsList = new ArrayList<String>();
 
-        if(resultSet.moveToFirst()) {
+        if(result.moveToFirst()) {
             do {
-                accounts.add(resultSet.getString(resultSet.getColumnIndex("Account_no")));
-            } while (resultSet.moveToNext());
+                accountsList.add(result.getString(result.getColumnIndex("Account_no")));
+            } while (result.moveToNext());
         }
 
-        return accounts;
+        return accountsList;
     }
 
     @Override
     public List<Account> getAccountsList() {
-        Cursor resultSet = database.rawQuery("SELECT * FROM Account",null);
-        List<Account> accounts = new ArrayList<Account>();
+        Cursor result = database.rawQuery("SELECT * FROM Account",null);
+        List<Account> accountList = new ArrayList<Account>();
 
-        if(resultSet.moveToFirst()) {
+        if(result.moveToFirst()) {
             do {
-                Account account = new Account(resultSet.getString(resultSet.getColumnIndex("Account_no")),
-                        resultSet.getString(resultSet.getColumnIndex("Bank")),
-                        resultSet.getString(resultSet.getColumnIndex("Holder")),
-                        resultSet.getDouble(resultSet.getColumnIndex("Initial_amt")));
-                accounts.add(account);
-            } while (resultSet.moveToNext());
+                Account account = new Account(result.getString(result.getColumnIndex("Account_no")),
+                        result.getString(result.getColumnIndex("Bank")),
+                        result.getString(result.getColumnIndex("Holder")),
+                        result.getDouble(result.getColumnIndex("Initial_amt")));
+                accountList.add(account);
+            } while (result.moveToNext());
         }
 
-        return accounts;
+        return accountList;
     }
 
     @Override
@@ -74,40 +74,40 @@ public class PersistentAccountDAO implements AccountDAO {
     public void addAccount(Account account) {
 
         String sql = "INSERT INTO Account (Account_no,Bank,Holder,Initial_amt) VALUES (?,?,?,?)";
-        SQLiteStatement statement = database.compileStatement(sql);
+        SQLiteStatement sqlState = database.compileStatement(sql);
 
 
 
-        statement.bindString(1, account.getAccountNo());
-        statement.bindString(2, account.getBankName());
-        statement.bindString(3, account.getAccountHolderName());
-        statement.bindDouble(4, account.getBalance());
+        sqlState.bindString(1, account.getAccountNo());
+        sqlState.bindString(2, account.getBankName());
+        sqlState.bindString(3, account.getAccountHolderName());
+        sqlState.bindDouble(4, account.getBalance());
 
-        statement.executeInsert();
+        sqlState.executeInsert();
 
 
     }
 
     @Override
     public void removeAccount(String accountNo) throws InvalidAccountException {
-        String sql = "DELETE FROM Account WHERE Account_no = ?";
-        SQLiteStatement statement = database.compileStatement(sql);
+        String sqlStr = "DELETE FROM Account WHERE Account_no = ?";
+        SQLiteStatement SqlStatement = database.compileStatement(sqlStr);
 
-        statement.bindString(1,accountNo);
+        SqlStatement.bindString(1,accountNo);
 
-        statement.executeUpdateDelete();
+        SqlStatement.executeUpdateDelete();
     }
 
     @Override
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException {
-        String sql = "UPDATE Account SET Initial_amt = Initial_amt + ?";
-        SQLiteStatement statement = database.compileStatement(sql);
+        String sqlStrng = "UPDATE Account SET Initial_amt = Initial_amt + ?";
+        SQLiteStatement SqlStatem = database.compileStatement(sqlStrng);
         if(expenseType == ExpenseType.EXPENSE){
-            statement.bindDouble(1,-amount);
+            SqlStatem.bindDouble(1,-amount);
         }else{
-            statement.bindDouble(1,amount);
+            SqlStatem.bindDouble(1,amount);
         }
 
-        statement.executeUpdateDelete();
+        SqlStatem.executeUpdateDelete();
     }
 }
